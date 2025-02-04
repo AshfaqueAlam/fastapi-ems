@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import PostgresDsn, RedisDsn
+# from pydantic import PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings
 
 
@@ -19,10 +19,10 @@ class Config(BaseConfig):
     DEBUG: int = 0
     DEFAULT_LOCALE: str = "en_US"
     ENVIRONMENT: str = EnvironmentType.DEVELOPMENT
-    POSTGRES_URL: PostgresDsn = (
+    POSTGRES_URL: str = (
         "postgresql+asyncpg://user:password@127.0.0.1:5432/db-name"
     )
-    REDIS_URL: RedisDsn = "redis://localhost:6379/7"
+    REDIS_URL: str = "redis://localhost:6379/7"
     RELEASE_VERSION: str = "0.1"
     SHOW_SQL_ALCHEMY_QUERIES: int = 0
     SECRET_KEY: str = "super-secret-key"
