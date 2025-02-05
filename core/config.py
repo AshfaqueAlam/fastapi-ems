@@ -3,6 +3,11 @@ from enum import Enum
 # from pydantic import PostgresDsn, RedisDsn
 # from pydantic_settings import BaseSettings
 from pydantic import BaseSettings
+# from dotenv import load_dotenv
+# import os
+
+# # Load the .env file
+# load_dotenv(override=True)
 
 
 class EnvironmentType(str, Enum):
@@ -14,6 +19,7 @@ class EnvironmentType(str, Enum):
 class BaseConfig(BaseSettings):
     class Config:
         case_sensitive = True
+        env_file = ".env"  # Specify the .env file
 
 
 class Config(BaseConfig):
