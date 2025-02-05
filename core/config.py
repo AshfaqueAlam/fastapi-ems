@@ -1,7 +1,8 @@
 from enum import Enum
 
 # from pydantic import PostgresDsn, RedisDsn
-from pydantic_settings import BaseSettings
+# from pydantic_settings import BaseSettings
+from pydantic import BaseSettings
 
 
 class EnvironmentType(str, Enum):

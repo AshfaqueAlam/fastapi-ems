@@ -6,7 +6,7 @@ from .session import (
     set_session_context,
 )
 # from .standalone_session import standalone_session
-# from .transactional import Propagation, Transactional
+from .transactional import Propagation, Transactional
 
 __all__ = [
     "Base",
