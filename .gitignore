@@ -167,3 +167,4 @@ cython_debug/
 # **/migrations/versions/**
 # !**/migrations/versions
 # !**/migrations/versions/__init__.py
+push_script.sh
