@@ -94,13 +94,3 @@ class EventRepository(BaseRepository[Event]):
             await self.session.commit()
             return True
         return False
-
-    async def list_events(self, join_: set[str] | None = None) -> list[Event]:
-        """
-        List all events.
-
-        :param join_: Join relations.
-        :return: List of events.
-        """
-        query = self._query(join_)
-        return await self.all_unique(query)

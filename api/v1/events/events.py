@@ -60,5 +60,7 @@ async def get_event(
 )
 async def list_events(
     event_controller: EventController = Depends(Factory().get_event_controller),
+    skip: int = 0,
+    limit: int = 100,
 ) -> List[EventResponse]:
-    return await event_controller.list_events()
+    return await event_controller.get_all(skip, limit)

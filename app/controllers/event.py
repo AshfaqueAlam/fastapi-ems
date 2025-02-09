@@ -18,7 +18,3 @@ class EventController(BaseController[Event]):
 
     async def get_event(self, event_id: int) -> EventResponse:
         return await self.event_repository.get_by_id(event_id)
-
-    async def list_events(self) -> list[EventResponse]:
-        # TODO: Pagination
-        return await self.event_repository.list_events()
