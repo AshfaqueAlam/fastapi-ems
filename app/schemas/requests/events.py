@@ -18,3 +18,4 @@ class EventUpdateRequest(BaseModel):
     end_time: datetime | None = None
     location: str | None = None
     max_attendees: int | None = None
+    status: str | None = None

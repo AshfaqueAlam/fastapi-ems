@@ -24,7 +24,7 @@ class EventRepository(BaseRepository[Event]):
         :return: Event.
         """
         query = self._query(join_)
-        query = query.filter(Event.id == event_id)
+        query = query.filter(Event.event_id == event_id)
 
         if join_ is not None:
             return await self.all_unique(query)
@@ -65,6 +65,7 @@ class EventRepository(BaseRepository[Event]):
         # await self.session.refresh(event)
         # return event
 
+    @Transactional(propagation=Propagation.REQUIRED)
     async def update_event(self, event_id: int, event_data: dict) -> Event | None:
         """
         Update an existing event.
@@ -76,9 +77,10 @@ class EventRepository(BaseRepository[Event]):
         event = await self.get_by_id(event_id)
         if event:
             for key, value in event_data.items():
+                print("key: ", key, "value: ", value)
                 setattr(event, key, value)
-            await self.session.commit()
-            await self.session.refresh(event)
+            # await self.session.commit()
+            # await self.session.refresh(event)
         return event
 
     async def delete_event(self, event_id: int) -> bool:
