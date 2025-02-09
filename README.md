@@ -1,11 +1,18 @@
-> python main.py
----
-> alembic revision --autogenerate -m "$$message"
-> alembic upgrade head
----
-> celery -A worker worker -l info
-> celery -A worker beat -l info
+### Initial models migration
+```sh
+alembic revision --autogenerate -m "$$message"
+alembic upgrade head
+```
 
+### Run project with
+> python main.py
+
+
+### Celery workers
+```
+celery -A worker worker -l info
+celery -A worker beat -l info
+```
 
 
 ### Project Structure Overview
