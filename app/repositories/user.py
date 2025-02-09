@@ -1,4 +1,5 @@
 from sqlalchemy import Select
+
 # from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
@@ -58,6 +59,22 @@ class UserRepository(BaseRepository[User]):
         """
         setattr(user, "check_in_status", True)
         return user
+
+    @Transactional(propagation=Propagation.REQUIRED)
+    async def bulk_checkin(self, data: list[dict]) -> list[User]:
+        """
+        Bulk checkin users.
+
+        :param data: List of user data.
+        :return: List of users.
+        """
+        response = []
+        for each_dict in data:
+            user = await self.get_by_username(each_dict["username"])
+            if user:
+                setattr(user, "check_in_status", True)
+                response.append(user)
+        return response
 
     # def _join_tasks(self, query: Select) -> Select:
     #     """

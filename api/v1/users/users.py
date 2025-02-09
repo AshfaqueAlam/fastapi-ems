@@ -1,6 +1,6 @@
-from typing import Callable
+from typing import Callable, List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, UploadFile
 
 from app.controllers import AuthController, UserController, EventController
 from app.models.user import User, UserPermission
@@ -29,7 +29,7 @@ async def get_users(
 @user_router.post("/", status_code=201)
 async def register_user(
     register_user_request: RegisterUserRequest,
-    auth_controller: AuthController = Depends(Factory().get_auth_controller)
+    auth_controller: AuthController = Depends(Factory().get_auth_controller),
 ) -> UserResponse:
     return await auth_controller.register(
         # email=register_user_request.email,
@@ -55,9 +55,18 @@ def get_user(
 ) -> UserResponse:
     return user
 
+
 @user_router.put("/checkin", dependencies=[Depends(AuthenticationRequired)])
 async def checkin_user(
     user_controller: UserController = Depends(Factory().get_user_controller),
     user: User = Depends(get_current_user),
 ) -> UserResponse:
     return await user_controller.checkin(user)
+
+
+@user_router.post("/bulk_checkin", dependencies=[Depends(AuthenticationRequired)])
+async def bulk_checkin(
+    user_controller: UserController = Depends(Factory().get_user_controller),
+    file: UploadFile = File(...),
+) -> List[UserResponse]:
+    return await user_controller.bulk_checkin(file)
