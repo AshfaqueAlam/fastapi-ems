@@ -1,5 +1,6 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from datetime import datetime
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.controllers import EventController
 from app.schemas.requests.events import EventCreateRequest, EventUpdateRequest
 from app.schemas.responses.events import EventResponse
@@ -62,5 +63,14 @@ async def list_events(
     event_controller: EventController = Depends(Factory().get_event_controller),
     skip: int = 0,
     limit: int = 100,
+    status: Optional[str] = Query(None, description="Filter by event status"),
+    location: Optional[str] = Query(None, description="Filter by event location"),
+    start_date: Optional[datetime] = Query(None, description="Filter by start date"),
+    end_date: Optional[datetime] = Query(None, description="Filter by end date"),
 ) -> List[EventResponse]:
-    return await event_controller.get_all(skip, limit)
+    filters = {}
+    if status:
+        filters["status"] = status
+    if location:
+        filters["location"] = location
+    return await event_controller.get_all(skip=skip, limit=limit, filters=filters)
