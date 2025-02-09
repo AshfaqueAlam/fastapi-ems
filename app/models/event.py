@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from sqlalchemy import BigInteger, Column, Unicode, DateTime, Integer, Enum as SQLAlchemyEnum
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from core.database import Base
 from core.database.mixins import TimestampMixin
@@ -26,6 +27,9 @@ class Event(Base, TimestampMixin):
     location = Column(Unicode(255), nullable=True)
     max_attendees = Column(Integer, nullable=False)
     status = Column(SQLAlchemyEnum(EventStatus), nullable=False, default=EventStatus.SCHEDULED)
+
+    # Define the users relationship
+    users = relationship("User", back_populates="event")
 
     __mapper_args__ = {"eager_defaults": True}
 

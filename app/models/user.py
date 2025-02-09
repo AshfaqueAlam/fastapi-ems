@@ -1,7 +1,7 @@
 from enum import Enum
 from uuid import uuid4
 
-from sqlalchemy import BigInteger, Boolean, Column, Unicode
+from sqlalchemy import BigInteger, Boolean, Column, Unicode, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -26,6 +26,19 @@ class User(Base, TimestampMixin):
     password = Column(Unicode(255), nullable=False)
     username = Column(Unicode(255), nullable=False, unique=True)
     is_admin = Column(Boolean, default=False)
+    first_name = Column(Unicode(255), nullable=True)
+    last_name = Column(Unicode(255), nullable=True)
+    phone_number = Column(Unicode(255), nullable=True)
+    check_in_status = Column(Boolean, default=False)
+    event_id = Column(BigInteger, ForeignKey("events.event_id"), nullable=True)
+
+    event = relationship(
+        "Event",
+        back_populates="users",
+        # lazy="raise",
+        # passive_deletes=True,
+        # nullable=True,
+    )
 
     # tasks = relationship(
     #     "Task", back_populates="author", lazy="raise", passive_deletes=True

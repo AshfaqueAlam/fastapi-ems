@@ -44,7 +44,7 @@ class UserRepository(BaseRepository[User]):
 
         if join_ is not None:
             return await self.all_unique(query)
-   
+
         return await self._one_or_none(query)
 
     # def _join_tasks(self, query: Select) -> Select:

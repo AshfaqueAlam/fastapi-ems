@@ -3,6 +3,7 @@ from pydantic import EmailStr
 from app.models import User
 from app.repositories import UserRepository
 from app.schemas.extras.token import Token
+from app.schemas.requests.users import RegisterUserRequest
 from core.controller import BaseController
 from core.database import Propagation, Transactional
 from core.exceptions import BadRequestException, UnauthorizedException
@@ -15,27 +16,32 @@ class AuthController(BaseController[User]):
         self.user_repository = user_repository
 
     @Transactional(propagation=Propagation.REQUIRED)
-    async def register(self, email: EmailStr, password: str, username: str) -> User:
+    async def register(
+        self, request_data: RegisterUserRequest
+    ) -> User:  # email: EmailStr, password: str, username: str
         # Check if user exists with email
-        user = await self.user_repository.get_by_email(email)
+        user = await self.user_repository.get_by_email(request_data.email)
 
         if user:
             raise BadRequestException("User already exists with this email")
 
         # Check if user exists with username
-        user = await self.user_repository.get_by_username(username)
+        user = await self.user_repository.get_by_username(request_data.username)
 
         if user:
             raise BadRequestException("User already exists with this username")
 
-        password = PasswordHandler.hash(password)
+        password = PasswordHandler.hash(request_data.password)
+
+        request_data.password = password
 
         return await self.user_repository.create(
-            {
-                "email": email,
-                "password": password,
-                "username": username,
-            }
+            # {
+            #     "email": email,
+            #     "password": password,
+            #     "username": username,
+            # }
+            request_data.dict()
         )
 
     async def login(self, email: EmailStr, password: str) -> Token:

@@ -32,9 +32,10 @@ async def register_user(
     auth_controller: AuthController = Depends(Factory().get_auth_controller),
 ) -> UserResponse:
     return await auth_controller.register(
-        email=register_user_request.email,
-        password=register_user_request.password,
-        username=register_user_request.username,
+        # email=register_user_request.email,
+        # password=register_user_request.password,
+        # username=register_user_request.username,
+        register_user_request
     )
 
 

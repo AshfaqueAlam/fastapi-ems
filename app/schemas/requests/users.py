@@ -7,8 +7,11 @@ from pydantic import BaseModel, EmailStr, constr, validator
 
 class RegisterUserRequest(BaseModel):
     email: EmailStr
-    password: constr(min_length=5, max_length=64)
+    password: constr(min_length=8, max_length=64)
     username: constr(min_length=3, max_length=64)
+    first_name: str
+    last_name: str
+    phone_number: str
 
     @validator("password")
     def password_must_contain_special_characters(cls, v):
