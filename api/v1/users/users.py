@@ -1,6 +1,6 @@
-from typing import Callable, List
+from typing import Callable, List, Optional
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, Query, UploadFile
 
 from app.controllers import AuthController, UserController, EventController
 from app.models.user import User, UserPermission
@@ -17,10 +17,18 @@ user_router = APIRouter()
 
 @user_router.get("/", dependencies=[Depends(AuthenticationRequired)])
 async def get_users(
+    skip: int = 0,
+    limit: int = 100,
     user_controller: UserController = Depends(Factory().get_user_controller),
     assert_access: Callable = Depends(Permissions(UserPermission.READ)),
+    event_id: Optional[int] = Query(None, description="Filter by event ID"),
 ) -> list[UserResponse]:
-    users = await user_controller.get_all()
+
+    filters: dict[str, int] = {}
+    if event_id:
+        filters["event_id"] = event_id
+
+    users = await user_controller.get_all(skip=skip, limit=limit, filters=filters)
 
     assert_access(resource=users)
     return users

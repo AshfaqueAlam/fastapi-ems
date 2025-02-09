@@ -1,4 +1,4 @@
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, Type, TypeVar, Optional, Dict
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -55,7 +55,11 @@ class BaseController(Generic[ModelType]):
         return db_obj
 
     async def get_all(
-        self, skip: int = 0, limit: int = 100, join_: set[str] | None = None
+        self,
+        skip: int = 0,
+        limit: int = 100,
+        join_: set[str] | None = None,
+        filters: Optional[Dict[str, Any]] = None,
     ) -> list[ModelType]:
         """
         Returns a list of records based on pagination params.
@@ -63,10 +67,11 @@ class BaseController(Generic[ModelType]):
         :param skip: The number of records to skip.
         :param limit: The number of records to return.
         :param join_: The joins to make.
+        :param filters: The filters to apply.
         :return: A list of records.
         """
 
-        response = await self.repository.get_all(skip, limit, join_)
+        response = await self.repository.get_all(skip, limit, join_, filters)
         return response
 
     @Transactional(propagation=Propagation.REQUIRED)

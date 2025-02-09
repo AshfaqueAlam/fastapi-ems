@@ -1,9 +1,10 @@
 from functools import reduce
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, Type, TypeVar, Optional, Dict
 
 from sqlalchemy import Select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
+from sqlalchemy.sql import and_
 
 from core.database import Base
 
@@ -32,7 +33,11 @@ class BaseRepository(Generic[ModelType]):
         return model
 
     async def get_all(
-        self, skip: int = 0, limit: int = 100, join_: set[str] | None = None
+        self,
+        skip: int = 0,
+        limit: int = 100,
+        join_: set[str] | None = None,
+        filters: Optional[Dict[str, Any]] = None,
     ) -> list[ModelType]:
         """
         Returns a list of model instances.
@@ -40,15 +45,44 @@ class BaseRepository(Generic[ModelType]):
         :param skip: The number of records to skip.
         :param limit: The number of record to return.
         :param join_: The joins to make.
+        :param filters: The filters to apply.
         :return: A list of model instances.
         """
         query = self._query(join_)
+
+        # Apply dynamic filtering if filters are provided.
+        if filters:
+            query = self.apply_filters(query, filters)
+
         query = query.offset(skip).limit(limit)
 
         if join_ is not None:
             return await self.all_unique(query)
-            
+
         return await self._all(query)
+
+    def apply_filters(self, query, filters: Dict[str, Any]):
+        """
+        Apply dynamic filtering to the query based on provided filter conditions.
+
+        :param query: The SQLAlchemy query object.
+        :param filters: A dictionary of filters, e.g. {"username": "john", "age": 30}.
+                        If a filter value is a list, it will be treated as an IN clause.
+        :return: The modified query with filtering conditions applied.
+        """
+        conditions = []
+        for field, value in filters.items():
+            # Check if the model has this field
+            if hasattr(self.model_class, field):
+                column = getattr(self.model_class, field)
+                # If the value is a list, apply an IN condition
+                if isinstance(value, list):
+                    conditions.append(column.in_(value))
+                else:
+                    conditions.append(column == value)
+        if conditions:
+            query = query.where(and_(*conditions))
+        return query
 
     async def get_by(
         self,
