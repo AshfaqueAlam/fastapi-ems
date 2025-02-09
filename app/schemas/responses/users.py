@@ -10,6 +10,7 @@ class UserResponse(BaseModel):
     last_name: str | None = None
     phone_number: str | None = None
     check_in_status: bool | None = None
+    event_id: int | None = None
 
     class Config:
         orm_mode = True

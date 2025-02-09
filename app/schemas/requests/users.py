@@ -12,6 +12,7 @@ class RegisterUserRequest(BaseModel):
     first_name: str
     last_name: str
     phone_number: str
+    event_id: int
 
     @validator("password")
     def password_must_contain_special_characters(cls, v):
