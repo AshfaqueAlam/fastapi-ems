@@ -32,6 +32,7 @@ class Factory:
     def get_auth_controller(self, db_session=Depends(get_session)):
         return AuthController(
             user_repository=self.user_repository(db_session=db_session),
+            event_repository=self.event_repository(db_session=db_session),  # For event registration full validation...
         )
 
     def get_event_controller(self, db_session=Depends(get_session)):

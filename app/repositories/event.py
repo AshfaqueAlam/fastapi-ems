@@ -1,9 +1,11 @@
 from sqlalchemy import Select
+from sqlalchemy.sql.expression import select
 
 # from sqlalchemy import select
+from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
-from app.models import Event
+from app.models import Event, User
 from core.database import Propagation, Transactional
 from core.repository import BaseRepository
 
@@ -96,3 +98,20 @@ class EventRepository(BaseRepository[Event]):
             await self.session.commit()
             return True
         return False
+
+    async def is_attendee_limit_reached(self, event_id: int) -> bool:
+        """
+        Check if the max_attendees limit for the event has been reached.
+
+        :param event_id: Event ID.
+        :return: True if the limit is reached, False otherwise.
+        """
+        event = await self.get_by_id(event_id)
+        if not event:
+            raise ValueError(f"Event with ID {event_id} not found")
+
+        attendee_count = await self.session.scalar(
+            select(func.count(User.id)).where(User.event_id == event_id)
+        )
+
+        return attendee_count >= event.max_attendees

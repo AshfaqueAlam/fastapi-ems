@@ -1,7 +1,7 @@
 from pydantic import EmailStr
 
 from app.models import User
-from app.repositories import UserRepository
+from app.repositories import UserRepository, EventRepository
 from app.schemas.extras.token import Token
 from app.schemas.requests.users import RegisterUserRequest
 from core.controller import BaseController
@@ -11,9 +11,10 @@ from core.security import JWTHandler, PasswordHandler
 
 
 class AuthController(BaseController[User]):
-    def __init__(self, user_repository: UserRepository):
+    def __init__(self, user_repository: UserRepository, event_repository: EventRepository):
         super().__init__(model=User, repository=user_repository)
         self.user_repository = user_repository
+        self.event_repository = event_repository
 
     @Transactional(propagation=Propagation.REQUIRED)
     async def register(
@@ -31,9 +32,12 @@ class AuthController(BaseController[User]):
         if user:
             raise BadRequestException("User already exists with this username")
 
-        password = PasswordHandler.hash(request_data.password)
+        if await self.event_repository.is_attendee_limit_reached(request_data.event_id):
+            raise BadRequestException("Event is full. Registration closed for this event.")
 
-        request_data.password = password
+        # Hash the password
+        hashed_password = PasswordHandler.hash(request_data.password)
+        request_data.password = hashed_password
 
         return await self.user_repository.create(
             # {

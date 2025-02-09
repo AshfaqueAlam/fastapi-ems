@@ -2,7 +2,7 @@ from typing import Callable
 
 from fastapi import APIRouter, Depends
 
-from app.controllers import AuthController, UserController
+from app.controllers import AuthController, UserController, EventController
 from app.models.user import User, UserPermission
 from app.schemas.extras.token import Token
 from app.schemas.requests.users import LoginUserRequest, RegisterUserRequest
@@ -29,7 +29,7 @@ async def get_users(
 @user_router.post("/", status_code=201)
 async def register_user(
     register_user_request: RegisterUserRequest,
-    auth_controller: AuthController = Depends(Factory().get_auth_controller),
+    auth_controller: AuthController = Depends(Factory().get_auth_controller)
 ) -> UserResponse:
     return await auth_controller.register(
         # email=register_user_request.email,
