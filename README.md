@@ -2,6 +2,10 @@
 ---
 > alembic revision --autogenerate -m "$$message"
 > alembic upgrade head
+---
+> celery -A worker worker -l info
+> celery -A worker beat -l info
+
 
 
 ### Project Structure Overview

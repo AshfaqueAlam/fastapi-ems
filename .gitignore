@@ -169,3 +169,4 @@ cython_debug/
 # !**/migrations/versions/__init__.py
 script_git_push.sh
 .volumes
+celerybeat-schedule.*
