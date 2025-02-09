@@ -28,6 +28,7 @@ class BaseRepository(Generic[ModelType]):
             attributes = {}
         model = self.model_class(**attributes)
         self.session.add(model)
+        # self.session.refresh(model)
         return model
 
     async def get_all(

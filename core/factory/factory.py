@@ -2,9 +2,9 @@ from functools import partial
 
 from fastapi import Depends
 
-from app.controllers import AuthController, UserController  # TaskController
-from app.models import User  # Task
-from app.repositories import UserRepository  # TaskRepository
+from app.controllers import AuthController, UserController, EventController  # TaskController
+from app.models import User, Event  # Task
+from app.repositories import UserRepository, EventRepository  # TaskRepository
 from core.database import get_session
 
 
@@ -17,6 +17,7 @@ class Factory:
     # Repositories
     # task_repository = partial(TaskRepository, Task)
     user_repository = partial(UserRepository, User)
+    event_repository = partial(EventRepository, Event)
 
     def get_user_controller(self, db_session=Depends(get_session)):
         return UserController(
@@ -31,4 +32,9 @@ class Factory:
     def get_auth_controller(self, db_session=Depends(get_session)):
         return AuthController(
             user_repository=self.user_repository(db_session=db_session),
+        )
+
+    def get_event_controller(self, db_session=Depends(get_session)):
+        return EventController(
+            event_repository=self.event_repository(db_session=db_session),
         )
