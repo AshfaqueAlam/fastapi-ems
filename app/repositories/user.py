@@ -4,6 +4,7 @@ from sqlalchemy.orm import joinedload
 
 from app.models import User
 from core.repository import BaseRepository
+from core.database import Propagation, Transactional
 
 
 class UserRepository(BaseRepository[User]):
@@ -46,6 +47,17 @@ class UserRepository(BaseRepository[User]):
             return await self.all_unique(query)
 
         return await self._one_or_none(query)
+
+    @Transactional(propagation=Propagation.REQUIRED)
+    async def checkin(self, user: User) -> User:
+        """
+        Checkin user.
+
+        :param user: User.
+        :return: User.
+        """
+        setattr(user, "check_in_status", True)
+        return user
 
     # def _join_tasks(self, query: Select) -> Select:
     #     """

@@ -54,3 +54,10 @@ def get_user(
     user: User = Depends(get_current_user),
 ) -> UserResponse:
     return user
+
+@user_router.put("/checkin", dependencies=[Depends(AuthenticationRequired)])
+async def checkin_user(
+    user_controller: UserController = Depends(Factory().get_user_controller),
+    user: User = Depends(get_current_user),
+) -> UserResponse:
+    return await user_controller.checkin(user)
