@@ -170,3 +170,5 @@ cython_debug/
 script_git_push.sh
 .volumes
 celerybeat-schedule.*
+temp.*
+logs/

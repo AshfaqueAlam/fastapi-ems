@@ -15,7 +15,10 @@ from core.fastapi.middlewares import (
     AuthenticationMiddleware,
     ResponseLoggerMiddleware,
     SQLAlchemyMiddleware,
+    LogExceptionsMiddleware,
 )
+from core.logging_config import setup_logging
+setup_logging()
 
 
 def on_auth_error(request: Request, exc: Exception):
@@ -60,6 +63,7 @@ def make_middleware() -> List[Middleware]:
         ),
         Middleware(SQLAlchemyMiddleware),
         Middleware(ResponseLoggerMiddleware),
+        Middleware(LogExceptionsMiddleware),
     ]
     return middleware
 
